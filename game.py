@@ -12,6 +12,7 @@ face_left = True
 #settings
 clock = pygame.time.Clock()
 
+
 color = (0,0,30)
 class obj:
     def __init__(self):
@@ -74,11 +75,14 @@ fish_list = []
 d_list = []
 score = 0
 gameover = False
+pausetimerevent = pygame.USEREVENT + 1
+paused = False
 game_font = pygame.font.Font("font.ttf", 30)
-game_over = pygame.font.Font("font.ttf", 100)
+game_over = pygame.font.Font("font.ttf", 80)
 while run:
     clock.tick(80) #FPS
-    count+= 1
+    if not paused:
+        count+= 1
     if count == 60:
         count = 0
         new_fish = random.randint(rashi.sx//10,30+rashi.sx//2)   
@@ -125,6 +129,12 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        if event.type == pygame.MOUSEBUTTONUP:
+            if paused:
+                rashi.rescale(60,60)
+                score = 0
+                gameover = False
+                paused = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 move_left = True
@@ -161,14 +171,12 @@ while run:
             if fish in fish_list:
                 fish_list.remove(fish)
         if consume(rashi,fish):
-            game = game_font.render("Score: {}".format(int(score)),True,(255,0,0))
-            screen.blit(game,(size[0]//2 - 60, size[1]//2 + 10))
-            clock.tick(0)
-            count = 0
+            gameover = True
+            paused = True
             fish_list = []
             d_list = []
-            rashi.rescale(60,60)
-            score = 0
+            count = 0
+            
     screen.fill(color)
     bg = pygame.image.load("Data/bg.jpg")
     screen.blit(bg,(0,0))
@@ -177,8 +185,12 @@ while run:
         fish.show()
     text = game_font.render("Score: {}".format(int(score)),True,(255,255,255))
     screen.blit(text,(size[0]//2 - 60, 5))
-    pygame.display.flip()
+    if gameover:
+        game = game_over.render("Game over",True,(255,0,0))
+        screen.blit(game,(size[0]//2 - 200, size[1]//2 - 100))
 
+    pygame.display.flip()
+    
     if move_left == True:
         rashi.x -= rashi.move
         if rashi.x <= 0:
