@@ -85,7 +85,7 @@ while run:
         count+= 1
     if count == 60:
         count = 0
-        new_fish = random.randint(rashi.sx//10,30+rashi.sx//2)   
+        new_fish = random.randint(rashi.sx//20,30+rashi.sx//2)   
         if new_fish < 35:
             f2 = obj()
             f2.put_img("Data/F2.png")
@@ -95,16 +95,16 @@ while run:
         elif new_fish < 50:
             f3 = obj()
             f3.put_img("Data/F3.png")
-            f3.rescale(80,60)
+            f3.rescale(85,65)
             f3.render()
             fish_list.append(f3)
-        elif new_fish < 60:
+        elif new_fish < 70:
             n_fish = obj()
             n_fish.put_img("Data/fish.png")
-            n_fish.rescale(110,80)
+            n_fish.rescale(130,95)
             n_fish.render()
             fish_list.append(n_fish)
-        elif new_fish < 85:
+        elif new_fish < 95:
             f1 = obj()
             f1.put_img("Data/F1.png")
             f1.rescale(150,150)
@@ -113,7 +113,7 @@ while run:
         else:
             shark = obj()
             shark.put_img("Data/shark.png")
-            shark.rescale(400,220)
+            shark.rescale(350,180)
             shark.render()
             fish_list.append(shark)
         
