@@ -1,1 +1,1 @@
-# pygame_demo_fish
+# pygame_demo_rashi
