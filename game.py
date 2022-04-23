@@ -2,7 +2,7 @@ import pygame
 import random
 pygame.init()
 
-size = [1200,800]
+size = [1400,800]
 screen = pygame.display.set_mode(size)
 
 title = 'Raise rashi'
@@ -12,7 +12,7 @@ face_left = True
 #settings
 clock = pygame.time.Clock()
 
-color = (0,0,0)
+color = (0,0,30)
 class obj:
     def __init__(self):
         self.x = -300
@@ -41,7 +41,7 @@ class obj:
             self.move = random.randint(2,5)      
             self.facing_Left = False
         else:
-            self.x = size[1]+self.sx + 150
+            self.x = size[0]+self.sx
             if not self.facing_Left:
                 self.face()
             self.move = random.randint(2,5)
@@ -49,8 +49,8 @@ class obj:
             self.facing_left = True
     
 def consume(a,b):
-    if a.x-(b.sx*0.8) <= b.x and b.x <= a.x + (0.8*a.sx):
-        if a.y-(0.8*b.sy) <= b.y and b.y <= a.y + (0.8*a.sy):
+    if a.x-(b.sx*0.85) <= b.x and b.x <= a.x + (0.85*a.sx):
+        if a.y-(0.6*b.sy) <= b.y and b.y <= a.y + (0.6*a.sy):
             if a.sx * a.sy > b.sx *b.sy:
                 return False
             else:
@@ -73,38 +73,40 @@ count = 0
 fish_list = []
 d_list = []
 score = 0
+gameover = False
 game_font = pygame.font.Font("font.ttf", 30)
+game_over = pygame.font.Font("font.ttf", 100)
 while run:
     clock.tick(80) #FPS
     count+= 1
     if count == 60:
         count = 0
-        new_fish = random.randint(0,4)   
-        if new_fish == 0:
-            n_fish = obj()
-            n_fish.put_img("Data/fish.png")
-            n_fish.rescale(110,80)
-            n_fish.render()
-            fish_list.append(n_fish)
-        elif new_fish == 1:
-            f1 = obj()
-            f1.put_img("Data/F1.png")
-            f1.rescale(150,150)
-            f1.render()
-            fish_list.append(f1)
-        elif new_fish == 2:
+        new_fish = random.randint(rashi.sx//10,30+rashi.sx//2)   
+        if new_fish < 35:
             f2 = obj()
             f2.put_img("Data/F2.png")
             f2.rescale(60,40)
             f2.render()
             fish_list.append(f2)
-        elif new_fish == 3:
+        elif new_fish < 50:
             f3 = obj()
             f3.put_img("Data/F3.png")
             f3.rescale(80,60)
             f3.render()
             fish_list.append(f3)
-        elif new_fish == 4:
+        elif new_fish < 60:
+            n_fish = obj()
+            n_fish.put_img("Data/fish.png")
+            n_fish.rescale(110,80)
+            n_fish.render()
+            fish_list.append(n_fish)
+        elif new_fish < 85:
+            f1 = obj()
+            f1.put_img("Data/F1.png")
+            f1.rescale(150,150)
+            f1.render()
+            fish_list.append(f1)
+        else:
             shark = obj()
             shark.put_img("Data/shark.png")
             shark.rescale(400,220)
@@ -156,10 +158,20 @@ while run:
                 rashi.put_img("Data/rashi.png")
                 rashi.face()
             rashi.rescale(rashi.sx + (fish.sx+fish.sy)/70 + 1, rashi.sy + (fish.sx+fish.sy)/70 + 1)
-            fish_list.remove(fish)
+            if fish in fish_list:
+                fish_list.remove(fish)
         if consume(rashi,fish):
-            run = False
+            game = game_font.render("Score: {}".format(int(score)),True,(255,0,0))
+            screen.blit(game,(size[0]//2 - 60, size[1]//2 + 10))
+            clock.tick(0)
+            count = 0
+            fish_list = []
+            d_list = []
+            rashi.rescale(60,60)
+            score = 0
     screen.fill(color)
+    bg = pygame.image.load("Data/bg.jpg")
+    screen.blit(bg,(0,0))
     rashi.show()
     for fish in fish_list:
         fish.show()
