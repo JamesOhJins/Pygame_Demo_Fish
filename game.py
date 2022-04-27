@@ -48,7 +48,7 @@ class obj:
             self.move = random.randint(2,5)
             self.move = self.move * -1
             self.facing_left = True
-    
+sharkCount = 0
 def consume(a,b):
     if a.x-(b.sx*0.85) <= b.x and b.x <= a.x + (0.85*a.sx):
         if a.y-(0.6*b.sy) <= b.y and b.y <= a.y + (0.6*a.sy):
@@ -64,7 +64,7 @@ rashi.rescale(60,60)
 
 rashi.x = size[0]//2 - (rashi.sx//2)
 rashi.y = size[1] - (rashi.sy//2) - 450
-rashi.move = 4
+rashi.move = 4.5
 flag = True
 move_left, move_right, move_up, move_down = False,False,False,False
 
@@ -74,7 +74,9 @@ count = 0
 fish_list = []
 d_list = []
 score = 0
+
 gameover = False
+clear = False
 pausetimerevent = pygame.USEREVENT + 1
 paused = False
 game_font = pygame.font.Font("font.ttf", 30)
@@ -98,18 +100,24 @@ while run:
             f3.rescale(85,65)
             f3.render()
             fish_list.append(f3)
-        elif new_fish < 70:
+        elif new_fish < 75:
             n_fish = obj()
             n_fish.put_img("Data/fish.png")
-            n_fish.rescale(130,95)
+            n_fish.rescale(150,110)
             n_fish.render()
             fish_list.append(n_fish)
-        elif new_fish < 95:
+        elif new_fish < 100:
             f1 = obj()
             f1.put_img("Data/F1.png")
-            f1.rescale(150,150)
+            f1.rescale(170,170)
             f1.render()
             fish_list.append(f1)
+        elif new_fish < 103 or (new_fish>155 and new_fish<160) or new_fish > 180:
+            whale = obj()
+            whale.put_img("Data/whale.png")
+            whale.rescale(650,300)
+            whale.render()
+            fish_list.append(whale)
         else:
             shark = obj()
             shark.put_img("Data/shark.png")
@@ -120,7 +128,7 @@ while run:
     for i in fish_list:
         fish = i
         fish.x += fish.move
-        if fish.x <= -500 or fish.x >= size[0] + 500:
+        if fish.x <= -1000 or fish.x >= size[0] + 1000:
             d_list.append(i)
     for d in d_list:
         if d in fish_list:
@@ -133,7 +141,9 @@ while run:
             if paused:
                 rashi.rescale(60,60)
                 score = 0
+                sharkCount = 0
                 gameover = False
+                clear = False
                 paused = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
@@ -162,12 +172,20 @@ while run:
     for fish in fish_list:
         if consume(fish,rashi):
             score += ((fish.sx+fish.sy)/10)**2
+            if fish.sx == 650:
+                sharkCount += 1
+                if sharkCount == 1:
+                    clear = True
+                    paused = True
+                    fish_list = []
+                    d_list = []
+                    count = 0
             if face_left:
                 rashi.put_img("Data/rashi.png")
             else:
                 rashi.put_img("Data/rashi.png")
                 rashi.face()
-            rashi.rescale(rashi.sx + (fish.sx+fish.sy)/70 + 1, rashi.sy + (fish.sx+fish.sy)/70 + 1)
+            rashi.rescale(rashi.sx + (fish.sx+fish.sy)/140 + 2, rashi.sy + (fish.sx+fish.sy)/140 + 2)
             if fish in fish_list:
                 fish_list.remove(fish)
         if consume(rashi,fish):
@@ -188,22 +206,26 @@ while run:
     if gameover:
         game = game_over.render("Game over",True,(255,0,0))
         screen.blit(game,(size[0]//2 - 200, size[1]//2 - 100))
-
+        sharkCount = 0
+    elif clear:
+        game = game_over.render("Game Clear",True,(255,255,0))
+        screen.blit(game,(size[0]//2 - 200, size[1]//2 - 100))
+        sharkCount = 0
     pygame.display.flip()
-    
-    if move_left == True:
-        rashi.x -= rashi.move
-        if rashi.x <= 0:
-            rashi.x = 0
-    elif move_right == True:
-        rashi.x += rashi.move
-        if rashi.x >= size[0] - 80:
-            rashi.x = size[0] - 80
-    if move_up == True:
-        rashi.y -= rashi.move
-        if rashi.y <= 0:
-            rashi.y = 0
-    elif move_down == True:
-        rashi.y += rashi.move
-        if rashi.y >= size[1]-rashi.sy:
-            rashi.y = size[1] -rashi.sy
+    if not paused:
+        if move_left == True:
+            rashi.x -= rashi.move
+            if rashi.x <= 0:
+                rashi.x = 0
+        elif move_right == True:
+            rashi.x += rashi.move
+            if rashi.x >= size[0] - 80:
+                rashi.x = size[0] - 80
+        if move_up == True:
+            rashi.y -= rashi.move
+            if rashi.y <= 0 - (rashi.sy//3):
+                rashi.y = 0 - (rashi.sy//3)
+        elif move_down == True:
+            rashi.y += rashi.move
+            if rashi.y >= size[1]- rashi.sy//3:
+                rashi.y = size[1] -rashi.sy//3
